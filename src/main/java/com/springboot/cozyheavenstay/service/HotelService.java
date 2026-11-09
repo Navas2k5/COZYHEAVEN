@@ -28,10 +28,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -166,15 +168,19 @@ public class HotelService {
             throw new NullPointerException("Please upload a valid file");
 
         // Generate unique filename
-        String originalFileName = System.currentTimeMillis() + "_" +
-                file.getOriginalFilename();
+        String originalFileName = UUID.randomUUID().toString();
 
         // Copy file to images directory
-        Files.copy(
-                file.getInputStream(),
-                Paths.get(uploadDir + originalFileName),
-                StandardCopyOption.REPLACE_EXISTING
-        );
+        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+        Files.createDirectories(uploadPath);
+
+        Path targetPath = uploadPath.resolve(originalFileName).normalize();
+
+        if(!targetPath.startsWith(uploadPath)){
+            throw new IllegalArgumentException("Invalid file path");
+        }
+
+        Files.copy(file.getInputStream(),targetPath);
 
         // Save filename in database
         hotel.setImageUrl(originalFileName);
