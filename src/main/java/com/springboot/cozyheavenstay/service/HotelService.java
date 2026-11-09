@@ -181,6 +181,7 @@ public class HotelService {
         }
 
         Files.copy(file.getInputStream(),targetPath);
+        //trigger sonar
 
         // Save filename in database
         hotel.setImageUrl(originalFileName);
