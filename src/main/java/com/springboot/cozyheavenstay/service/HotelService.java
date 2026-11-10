@@ -20,6 +20,7 @@ import com.springboot.cozyheavenstay.repository.OwnerRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class HotelService {
 
@@ -47,6 +49,7 @@ public class HotelService {
 
     @Transactional
     public Long add(String ownerUsername, HotelRequestDto hotelRequestDto){
+        log.info("Adding hotel for owner: {}", ownerUsername);
         Owner owner= ownerRepository.getByUsername(ownerUsername);
 
         if(owner==null)
@@ -59,6 +62,7 @@ public class HotelService {
         hotel.setOwner(owner);
 
         hotelRepository.save(hotel);
+        log.info("Hotel saved successfully. Hotel ID: {}", hotel.getId());
         return hotel.getId();
     }
 
@@ -76,6 +80,8 @@ public class HotelService {
         //check ownership
         if(!hotel.getOwner().getUser().getUsername().equals(ownerUsername))
             throw new OwnerShipException("U are not allowed to update this hotel");
+
+        log.info("Updating hotel ID: {} by owner: {}", hotelId, ownerUsername);
 
         HotelMapper.updateEntityFromDto(hotelRequestDto,hotel);
         hotel.setVerificationStatus(VerificationStatus.PENDING);

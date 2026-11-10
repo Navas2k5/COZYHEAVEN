@@ -7,6 +7,7 @@ import com.springboot.cozyheavenstay.dto.response.HotelResponseDto;
 import com.springboot.cozyheavenstay.service.HotelService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @CrossOrigin(origins = "http://localhost:5173/")
 public class HotelController {
 
@@ -26,6 +28,7 @@ public class HotelController {
     @PostMapping("/api/hotel/add")
     public Long addHotel(@Valid @RequestBody HotelRequestDto hotelRequestDto,
                          Principal principal){
+        log.info("Request received to add hotel by owner: {}", principal.getName());
         return hotelService.add(principal.getName(),hotelRequestDto);
     }
 
@@ -33,7 +36,10 @@ public class HotelController {
     public void updateHotel(@PathVariable Long hotelId,
                             @Valid @RequestBody HotelRequestDto hotelRequestDto,
                             Principal principal){
+        log.info("Request received to update hotel ID: {} by owner: {}",
+                hotelId, principal.getName());
         hotelService.updateHotel(hotelId,hotelRequestDto,principal.getName());
+        log.info("Hotel updated successfully. Hotel ID: {}", hotelId);
     }
 
     @GetMapping("/api/hotel/all")

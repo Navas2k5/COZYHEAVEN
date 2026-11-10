@@ -15,6 +15,7 @@ import com.springboot.cozyheavenstay.model.*;
 import com.springboot.cozyheavenstay.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AdminService {
 
@@ -37,6 +39,7 @@ public class AdminService {
 
     @Transactional
     public void addAdmin(AdminRequestDto adminRequestDto) {
+        log.info("Registering new admin. Username: {}", adminRequestDto.username());
 
         Admin admin = AdminMapper.convertDtoToEntity(adminRequestDto);
 
@@ -50,6 +53,7 @@ public class AdminService {
         admin.setUser(user);
 
         adminRepository.save(admin);
+        log.info("Admin registered successfully. Username: {}", adminRequestDto.username());
     }
 
     public List<AdminHotelResponseDto> getAllPendingHotels() {
@@ -80,6 +84,7 @@ public class AdminService {
 
         //save
         hotelRepository.save(hotel);
+        log.info("Hotel verification status updated successfully. Hotel ID: {}", hotelId);
     }
 
     public List<AdminBookingResponseDto> getAllBookings(BookingStatus bookingStatus,Long hotelId, Integer page, Integer size){
@@ -138,6 +143,8 @@ public class AdminService {
         //update account status
         user.setActive(active);
         userRepository.save(user);
+        log.info("User account status updated successfully. User ID: {}, Active: {}",
+                userId, active);
 
         return AdminMapper.convertUserToDto(user);
     }
@@ -204,5 +211,6 @@ public class AdminService {
 
         // save
         hotelRepository.save(hotel);
+        log.info("Hotel status updated successfully. Hotel ID: {}", hotelId);
     }
 }

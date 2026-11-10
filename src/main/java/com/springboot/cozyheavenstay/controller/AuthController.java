@@ -5,6 +5,7 @@ import com.springboot.cozyheavenstay.dto.response.UserDetailsDto;
 import com.springboot.cozyheavenstay.service.UserService;
 import com.springboot.cozyheavenstay.utility.JwtUtility;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @CrossOrigin(origins = "http://localhost:5173/")
 public class AuthController {
 
@@ -24,8 +26,10 @@ public class AuthController {
 
     @GetMapping("/api/auth/login")
     public TokenDto login(Principal principal){
+        log.info("Generating authentication token for user: {}", principal.getName());
 
         String token = jwtUtility.generateToken(principal.getName());
+        log.info("Authentication token generated successfully for user: {}", principal.getName());
         return new TokenDto(
             token,
                 jwtUtility.extractExpiration(token),
@@ -35,6 +39,7 @@ public class AuthController {
 
     @GetMapping("/api/auth/user-details")
     public UserDetailsDto getUserDetails(Principal principal){
+        log.info("Fetching user details for: {}", principal.getName());
         String loggedInUsername = principal.getName();
         return userService.getUserDetails(loggedInUsername);
     }

@@ -14,6 +14,7 @@ import com.springboot.cozyheavenstay.repository.BookingRepository;
 import com.springboot.cozyheavenstay.repository.BookingRoomsRepository;
 import com.springboot.cozyheavenstay.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PaymentService {
     private final PaymentRepository paymentRepository;
@@ -29,6 +31,8 @@ public class PaymentService {
 
     @Transactional
     public PaymentResponseDto pay(Long bookingId,String customerUsername){
+        log.info("Processing payment for booking ID: {}, Customer: {}",
+                bookingId, customerUsername);
         //find booking
         Bookings booking=bookingRepository.findById(bookingId).orElseThrow(()->
                 new ResourceNotFoundException("Booking not found"));
@@ -65,6 +69,8 @@ public class PaymentService {
 
         //save payment
         payment= paymentRepository.save(payment);
+        log.info("Payment successful. Payment ID: {}, Booking ID: {}",
+                payment.getId(), bookingId);
 
         //return response
         return new PaymentResponseDto(payment.getId(),bookingId, payment.getAmount(),payment.getPaymentStatus(),BookingStatus.CONFIRMED,payment.getPaidAt()
@@ -108,6 +114,8 @@ public class PaymentService {
         payment.setRefundedAt(Instant.now());
         payment.setPaymentStatus(PaymentStatus.REFUNDED);
         paymentRepository.save(payment);
+        log.info("Refund processed successfully. Payment ID: {}, Booking ID: {}",
+                payment.getId(), bookingId);
 
         //return refund details
         return new RefundResponseDto(

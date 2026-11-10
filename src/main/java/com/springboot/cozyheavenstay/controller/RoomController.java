@@ -11,6 +11,7 @@ import com.springboot.cozyheavenstay.service.RoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @CrossOrigin(origins = "http://localhost:5173/")
 public class RoomController {
 
@@ -29,6 +31,7 @@ public class RoomController {
     public void addRoom(@PathVariable Long hotelId,
                         @Valid @RequestBody RoomRequestDto roomRequestDto,
                         Principal principal){
+        log.info("Adding room for hotel ID: {}", hotelId);
         roomService.add(hotelId,roomRequestDto,principal.getName());
     }
 

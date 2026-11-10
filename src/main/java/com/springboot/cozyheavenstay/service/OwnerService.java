@@ -15,6 +15,7 @@ import com.springboot.cozyheavenstay.model.*;
 import com.springboot.cozyheavenstay.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class OwnerService {
 
@@ -39,6 +41,7 @@ public class OwnerService {
 
     @Transactional
     public void addOwner(OwnerRequestDto ownerRequestDto) {
+        log.info("Registering new hotel owner. Username: {}", ownerRequestDto.username());
 
         Owner owner = OwnerMapper.convertDtoToEntity(ownerRequestDto);
 
@@ -51,6 +54,8 @@ public class OwnerService {
 
         owner.setUser(user);
         ownerRepository.save(owner);
+        log.info("Hotel owner registered successfully. Username: {}",
+                ownerRequestDto.username());
     }
 
     @Transactional
@@ -74,6 +79,7 @@ public class OwnerService {
 
         //save hotel
         hotelRepository.save(hotel);
+        log.info("Hotel status updated successfully. Hotel ID: {}", hotelId);
     }
 
 

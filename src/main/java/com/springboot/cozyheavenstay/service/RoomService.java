@@ -13,6 +13,7 @@ import com.springboot.cozyheavenstay.repository.HotelRepository;
 import com.springboot.cozyheavenstay.repository.RoomRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
 public class RoomService {
 
@@ -41,6 +43,7 @@ public class RoomService {
 
     @Transactional
     public void add(Long hotelId, @Valid RoomRequestDto roomRequestDto, String OwnerUsername) {
+        log.info("Adding room for hotel ID: {}", hotelId);
         //find hotel
         Hotels hotel = hotelRepository.findById(hotelId).orElseThrow(()->
                 new ResourceNotFoundException("Hotel Not Found"));
@@ -65,6 +68,8 @@ public class RoomService {
 
         //save room
         roomRepository.save(room);
+        log.info("Room created successfully. Room ID: {}, Hotel ID: {}",
+                room.getId(), hotelId);
     }
 
     private void validateRoomCapacity(RoomRequestDto roomRequestDto){
@@ -118,6 +123,8 @@ public class RoomService {
 
     @Transactional
     public void updateRoomStatus(Long roomId, RoomStatus roomStatus, String ownerUsername) {
+        log.info("Updating status of room ID: {} to {}",
+                roomId, roomStatus);
         //find room
         Rooms room = roomRepository.findById(roomId).orElseThrow(()->
                 new ResourceNotFoundException("Room Does not Exist"));
@@ -134,10 +141,12 @@ public class RoomService {
         room.setRoomStatus(roomStatus);
 
         roomRepository.save(room);
+        log.info("Room status updated successfully. Room ID: {}", roomId);
     }
 
     @Transactional
     public void updateRoom(Long roomId, RoomRequestDto roomRequestDto, String ownerUsername) {
+        log.info("Updating room details. Room ID: {}", roomId);
         // find room
         Rooms room = roomRepository.findById(roomId).orElseThrow(()->
                 new ResourceNotFoundException("Room not found"));
@@ -160,6 +169,7 @@ public class RoomService {
         //update existing room
         RoomMapper.updateEntityFromDto(roomRequestDto,room);
         roomRepository.save(room);
+        log.info("Room updated successfully. Room ID: {}", roomId);
     }
 
     public List<RoomResponseDto> getAvailableRooms(Long hotelId,

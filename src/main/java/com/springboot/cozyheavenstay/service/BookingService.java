@@ -14,6 +14,7 @@ import com.springboot.cozyheavenstay.mapper.BookingMapper;
 import com.springboot.cozyheavenstay.model.*;
 import com.springboot.cozyheavenstay.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
 public class BookingService {
 
@@ -142,6 +144,7 @@ public class BookingService {
 
     @Transactional
     public BookingResponseDto addBooking(BookingQuoteRequestDto dto, String customerUsername){
+        log.info("Creating booking for customer: {}", customerUsername);
         //find logged in user
         Customer customer=customerRepository.getByUsername(customerUsername);
 
@@ -164,6 +167,8 @@ public class BookingService {
 
         //save booking to get its ID
         booking=bookingRepository.save(booking);
+        log.info("Booking created successfully. Booking ID: {}, Customer: {}",
+                booking.getId(), customerUsername);
 
         //save each selected room
         for(BookingRoomQuoteDto roomQuote: quote.rooms()){
@@ -178,6 +183,7 @@ public class BookingService {
             bookingRoom.setPricePerNight(roomQuote.pricePerNight());
             bookingRoom.setSubtotal(roomQuote.subTotal());
             bookingRoomsRepository.save(bookingRoom);
+
         }
 
         //return booking details
@@ -263,6 +269,8 @@ public class BookingService {
 
     @Transactional
     public BookingResponseDto cancelBooking(Long bookingId,String customerUsername){
+        log.info("Cancelling booking ID: {} by customer: {}",
+                bookingId, customerUsername);
         //find bookings
         Bookings booking = bookingRepository.findById(bookingId).orElseThrow(()->
                 new ResourceNotFoundException("Booking Not Found"));
@@ -283,6 +291,8 @@ public class BookingService {
         //cancel booking
         booking.setBookingStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
+
+        log.info("Booking cancelled successfully. Booking ID: {}", bookingId);
 
         //return updated booking
         return BookingMapper.convertEntityToDto(booking);

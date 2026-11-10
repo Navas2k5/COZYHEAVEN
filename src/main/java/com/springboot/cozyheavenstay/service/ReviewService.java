@@ -18,6 +18,7 @@ import com.springboot.cozyheavenstay.repository.BookingRepository;
 import com.springboot.cozyheavenstay.repository.HotelRepository;
 import com.springboot.cozyheavenstay.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import java.time.Instant;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
 public class ReviewService {
 
@@ -36,6 +38,8 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponseDto addReview(Long bookingId, ReviewRequestDto dto,String customerUsername){
+        log.info("Adding review for booking ID: {}, Customer: {}",
+                bookingId, customerUsername);
         //find booking
         Bookings booking= bookingRepository.findById(bookingId).orElseThrow(()->
                 new ResourceNotFoundException("Booking not found"));
@@ -53,6 +57,7 @@ public class ReviewService {
         review.setBooking(booking);
         review.setCreatedAt(Instant.now());
         reviewRepository.save(review);
+        log.info("Review added successfully for booking ID: {}", bookingId);
 
         return ReviewMapper.convertEntityToDto(review);
 
@@ -97,6 +102,8 @@ public class ReviewService {
             averageRating=Math.round(averageRating*10.0)/10.0;
 
         //return summary
+        log.info("Review summary fetched successfully. Hotel ID: {}, Review count: {}",
+                hotelId, countOfReviews);
         return new HotelRatingSummaryDto(hotelId,averageRating,countOfReviews);
 
     }

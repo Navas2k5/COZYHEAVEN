@@ -1,10 +1,8 @@
-
 package com.springboot.cozyheavenstay.service;
 
 import com.springboot.cozyheavenstay.dto.request.CustomerRequestDto;
 import com.springboot.cozyheavenstay.dto.request.CustomerUpdateRequestDto;
 import com.springboot.cozyheavenstay.dto.response.CustomerProfileResponseDto;
-import com.springboot.cozyheavenstay.enums.Role;
 import com.springboot.cozyheavenstay.exception.InvalidCallException;
 import com.springboot.cozyheavenstay.exception.ResourceNotFoundException;
 import com.springboot.cozyheavenstay.model.Customer;
